@@ -19,8 +19,8 @@
                    class="text-gray-500 hover:text-gray-900 {{ request()->routeIs('categories.*') ? 'text-gray-900 font-medium' : '' }}">
                     Манга
                 </a>
-                <a href="#"
-                   class="text-gray-500 hover:text-gray-900">
+                <a href="{{ route('dictionary.index') }}"
+                   class="text-gray-500 hover:text-gray-900 {{ request()->routeIs('dictionary.*') ? 'text-gray-900 font-medium' : '' }}">
                     Словарь
                 </a>
             </div>
