@@ -1,12 +1,15 @@
 services:
   app:
     build:
-        context: .
-        dockerfile: docker/php/Dockerfile
+      context: .
+      dockerfile: docker/php/Dockerfile
     container_name: IRLS
+    restart: unless-stopped
     ports:
-        - "80:80"
+      - "80:80"
     volumes:
-        - ./src:/var/www/html
+      - ./src:/var/www/html
     working_dir: /var/www/html
+    env_file:
+      - ./src/.env
     command: php artisan serve --host=0.0.0.0 --port=80
