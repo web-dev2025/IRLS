@@ -49,6 +49,15 @@ class ChapterController extends Controller
             ->with('success', 'Глава удалена.');
     }
 
+    public function read(Chapter $chapter): View
+    {
+        abort_if($chapter->status !== 'ready', 404);
+
+        $pages = $chapter->pages()->orderBy('page_number')->get();
+
+        return view('chapters.read', compact('chapter', 'pages'));
+    }
+
     public function status(Chapter $chapter): JsonResponse
     {
         return response()->json([

@@ -15,3 +15,4 @@ Route::prefix('categories/{category}/chapters')->name('categories.chapters.')->g
 });
 
 Route::get('chapters/{chapter}/status', [ChapterController::class, 'status'])->name('chapters.status');
+Route::get('chapters/{chapter}/read', [ChapterController::class, 'read'])->name('chapters.read');

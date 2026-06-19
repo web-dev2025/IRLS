@@ -56,7 +56,8 @@
 
                         {{-- Read button (active only when ready) --}}
                         @if ($chapter->status === 'ready')
-                            <a href="#" class="text-sm text-blue-600 hover:text-blue-800">Читать</a>
+                            <a href="{{ route('chapters.read', $chapter) }}"
+                               class="text-sm text-blue-600 hover:text-blue-800">Читать</a>
                         @endif
 
                         <form action="{{ route('categories.chapters.destroy', [$category, $chapter]) }}" method="POST"
@@ -98,12 +99,11 @@
 
                 if (data.status === 'ready') {
                     badge.innerHTML = '<span class="text-sm text-green-600 font-medium">Готово</span>';
-                    // Add read button
                     const actionsDiv = badge.parentElement;
-                    if (!actionsDiv.querySelector('a[href="#"]')) {
+                    if (!actionsDiv.querySelector('.read-link')) {
                         const link = document.createElement('a');
-                        link.href = '#';
-                        link.className = 'text-sm text-blue-600 hover:text-blue-800';
+                        link.href = `/chapters/${id}/read`;
+                        link.className = 'read-link text-sm text-blue-600 hover:text-blue-800';
                         link.textContent = 'Читать';
                         actionsDiv.insertBefore(link, badge.nextSibling);
                     }
