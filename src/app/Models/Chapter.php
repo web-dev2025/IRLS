@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Chapter extends Model
 {
-    protected $fillable = ['category_id', 'title', 'source_url', 'status', 'sort_order'];
+    protected $fillable = ['category_id', 'title', 'source_url', 'image_urls', 'status', 'sort_order'];
 
     public function category(): BelongsTo
     {

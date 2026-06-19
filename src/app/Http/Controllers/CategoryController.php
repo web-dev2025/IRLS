@@ -33,6 +33,13 @@ class CategoryController extends Controller
         return redirect()->route('categories.index')->with('success', 'Категория создана.');
     }
 
+    public function show(Category $category): View
+    {
+        $chapters = $category->chapters()->withCount('pages')->get();
+
+        return view('categories.show', compact('category', 'chapters'));
+    }
+
     public function edit(Category $category): View
     {
         return view('categories.edit', compact('category'));
