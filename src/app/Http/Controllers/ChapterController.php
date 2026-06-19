@@ -53,7 +53,7 @@ class ChapterController extends Controller
     {
         abort_if($chapter->status !== 'ready', 404);
 
-        $pages = $chapter->pages()->orderBy('page_number')->get();
+        $pages = $chapter->pages()->with('notes')->orderBy('page_number')->get();
 
         return view('chapters.read', compact('chapter', 'pages'));
     }

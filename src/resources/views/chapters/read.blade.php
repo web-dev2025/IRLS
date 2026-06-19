@@ -44,6 +44,11 @@
         @endforeach
     </div>
 
+    @php
+        $notesJson = $pages->flatMap(fn($p) => $p->notes)->values()->toJson();
+    @endphp
+    <script>window.__EXISTING_NOTES__ = @json(json_decode($notesJson));</script>
+
     {{-- Note modal --}}
     <div id="note-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-black/60" id="modal-backdrop"></div>
@@ -275,20 +280,91 @@
         const container = document.querySelector(`[data-page-id="${note.page_id}"]`);
         if (!container) return;
 
+        const isPoint = note.width === 0 && note.height === 0;
+
         const marker = document.createElement('div');
-        marker.title = note.phrase;
+        marker.dataset.noteId = note.id;
+        marker.title = `${note.phrase}${note.translation ? ' — ' + note.translation : ''}`;
         marker.style.cssText = `
             position: absolute;
             left: ${note.x}%;
             top:  ${note.y}%;
-            width:  ${note.width  > 0 ? note.width  + '%' : '12px'};
-            height: ${note.height > 0 ? note.height + '%' : '12px'};
+            width:  ${isPoint ? '14px' : note.width + '%'};
+            height: ${isPoint ? '14px' : note.height + '%'};
             border: 2px solid rgba(250,200,0,0.9);
             background: rgba(250,200,0,0.2);
-            border-radius: ${note.width > 0 ? '3px' : '50%'};
-            pointer-events: none;
+            border-radius: ${isPoint ? '50%' : '3px'};
+            transform: ${isPoint ? 'translate(-50%, -50%)' : 'none'};
+            cursor: pointer;
+            z-index: 10;
         `;
+
+        marker.addEventListener('click', e => {
+            e.stopPropagation();
+            showNotePopup(note, marker);
+        });
+
         container.appendChild(marker);
+    }
+
+    // ── Note popup (view / delete) ────────────────────────────────
+    function showNotePopup(note, markerEl) {
+        document.querySelectorAll('.note-popup').forEach(p => p.remove());
+
+        const popup = document.createElement('div');
+        popup.className = 'note-popup';
+        popup.style.cssText = `
+            position: fixed;
+            z-index: 100;
+            background: white;
+            border-radius: 10px;
+            padding: 14px 16px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+            max-width: 280px;
+            min-width: 200px;
+            font-size: 13px;
+            color: #111;
+        `;
+
+        popup.innerHTML = `
+            <div style="font-weight:600;margin-bottom:4px">${note.phrase}</div>
+            ${note.translation ? `<div style="color:#555;margin-bottom:4px">${note.translation}</div>` : ''}
+            ${note.comment     ? `<div style="color:#888;font-size:12px;margin-bottom:8px">${note.comment}</div>` : ''}
+            <button class="delete-btn" style="font-size:12px;color:#e53e3e;cursor:pointer;background:none;border:none;padding:0">
+                Удалить заметку
+            </button>
+        `;
+
+        // Position near marker
+        const rect = markerEl.getBoundingClientRect();
+        popup.style.top  = (rect.bottom + 8 + window.scrollY) + 'px';
+        popup.style.left = Math.min(rect.left, window.innerWidth - 300) + 'px';
+
+        popup.querySelector('.delete-btn').addEventListener('click', () => {
+            fetch(`/api/notes/${note.id}`, {
+                method:  'DELETE',
+                headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+            }).then(() => {
+                markerEl.remove();
+                popup.remove();
+            });
+        });
+
+        document.body.appendChild(popup);
+
+        // Close popup on outside click
+        setTimeout(() => {
+            document.addEventListener('click', function handler() {
+                popup.remove();
+                document.removeEventListener('click', handler);
+            }, { once: true });
+        }, 10);
+    }
+
+    // ── Load existing notes ───────────────────────────────────────
+    if (window.__EXISTING_NOTES__) {
+        // Wait for images to be in DOM, then render markers
+        window.__EXISTING_NOTES__.forEach(note => renderNoteMark(note));
     }
 })();
 </script>
