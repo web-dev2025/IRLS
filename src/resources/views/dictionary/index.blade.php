@@ -55,7 +55,7 @@
                             </td>
                             <td class="px-4 py-3 text-gray-400 text-xs">
                                 @if ($note->page?->chapter)
-                                    <a href="{{ route('chapters.read', $note->page->chapter) }}"
+                                    <a href="{{ route('chapters.read', $note->page->chapter) }}#page-{{ $note->page->page_number }}"
                                        class="hover:text-gray-700 hover:underline">
                                         {{ $note->page->chapter->category->name }}<br>
                                         {{ $note->page->chapter->title }}, стр. {{ $note->page->page_number }}

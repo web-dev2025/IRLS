@@ -21,7 +21,7 @@
 <body class="min-h-screen">
 
     {{-- Top bar --}}
-    <div class="sticky top-0 z-50 bg-black/80 backdrop-blur-sm border-b border-white/10 px-4 h-12 flex items-center justify-between">
+    <div class="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-sm border-b border-white/10 px-4 h-12 flex items-center justify-between">
         <a href="{{ route('categories.show', $chapter->category) }}"
            class="text-sm text-gray-400 hover:text-white flex items-center gap-1">
             ← {{ $chapter->category->name }}
@@ -31,11 +31,13 @@
     </div>
 
     {{-- Pages --}}
-    <div class="mx-auto" style="max-width: 800px;">
+    <div class="mx-auto pt-12" style="max-width: 800px;">
         @foreach ($pages as $page)
             <div class="page-container"
+                 id="page-{{ $page->page_number }}"
                  data-page-id="{{ $page->id }}"
-                 data-page-number="{{ $page->page_number }}">
+                 data-page-number="{{ $page->page_number }}"
+                 style="scroll-margin-top: 48px;">
                 <img src="{{ Storage::url($page->file_path) }}"
                      alt="Страница {{ $page->page_number }}"
                      loading="lazy">

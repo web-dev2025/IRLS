@@ -19,12 +19,12 @@
         <div class="grid grid-cols-1 gap-3">
             @foreach ($categories as $category)
                 <div class="flex items-center justify-between bg-white border border-gray-200 rounded-lg px-5 py-4">
-                    <div>
+                    <a href="{{ route('categories.show', $category) }}" class="flex-1 min-w-0 hover:opacity-75">
                         <div class="font-medium">{{ $category->name }}</div>
                         @if ($category->description)
                             <div class="text-sm text-gray-500 mt-0.5">{{ $category->description }}</div>
                         @endif
-                    </div>
+                    </a>
                     <div class="flex items-center gap-4 ml-4 shrink-0">
                         <span class="text-sm text-gray-400">{{ $category->chapters_count }} гл.</span>
                         <a href="{{ route('categories.edit', $category) }}"
