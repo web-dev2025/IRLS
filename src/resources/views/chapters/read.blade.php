@@ -70,19 +70,19 @@
             </div>
 
             <div>
-                <div class="flex items-center justify-between mb-1">
-                    <label class="block text-sm font-medium text-gray-700">Перевод</label>
-                    <button id="btn-lookup" type="button"
-                            class="text-xs text-blue-600 hover:text-blue-800">
-                        Найти в словаре
-                    </button>
-                </div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Перевод</label>
                 <input type="text" id="note-translation" placeholder="Перевод"
                        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-500">
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Комментарий</label>
+                <div class="flex items-center justify-between mb-1">
+                    <label class="block text-sm font-medium text-gray-700">Комментарий</label>
+                    <button id="btn-lookup" type="button"
+                            class="text-xs text-blue-600 hover:text-blue-800">
+                        Найти определение
+                    </button>
+                </div>
                 <textarea id="note-comment" rows="2" placeholder="Необязательно"
                           class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-500"></textarea>
             </div>
@@ -230,9 +230,9 @@
             .then(r => r.json())
             .then(data => {
                 if (data.translation) {
-                    document.getElementById('note-translation').value = data.translation;
+                    document.getElementById('note-comment').value = data.translation;
                 } else {
-                    alert('Перевод не найден');
+                    alert('Определение не найдено');
                 }
             })
             .catch(() => alert('Ошибка запроса к словарю'))
@@ -287,19 +287,21 @@
         const marker = document.createElement('div');
         marker.dataset.noteId = note.id;
         marker.title = `${note.phrase}${note.translation ? ' — ' + note.translation : ''}`;
+        marker.title += `${note.comment ? ' = ' + note.comment : ''}`;
         marker.style.cssText = `
             position: absolute;
             left: ${note.x}%;
             top:  ${note.y}%;
             width:  ${isPoint ? '14px' : note.width + '%'};
             height: ${isPoint ? '14px' : note.height + '%'};
-            border: 2px solid rgba(250,200,0,0.9);
-            background: rgba(250,200,0,0.2);
+            border: 2px solid hsl(27, 100%, 49%);
+            background: rgb(250, 246, 0);
             border-radius: ${isPoint ? '50%' : '3px'};
             transform: ${isPoint ? 'translate(-50%, -50%)' : 'none'};
             cursor: pointer;
             z-index: 10;
         `;
+        marker.classList.add('animate-pulse');
 
         marker.addEventListener('click', e => {
             e.stopPropagation();
@@ -365,8 +367,33 @@
 
     // ── Load existing notes ───────────────────────────────────────
     if (window.__EXISTING_NOTES__) {
-        // Wait for images to be in DOM, then render markers
         window.__EXISTING_NOTES__.forEach(note => renderNoteMark(note));
+    }
+
+    // ── Anchor scroll after images above target are loaded ────────
+    if (location.hash) {
+        const target = document.querySelector(location.hash);
+        if (target) {
+            const targetPageNum = parseInt(target.dataset.pageNumber);
+            const pending = [];
+
+            document.querySelectorAll('.page-container').forEach(container => {
+                if (parseInt(container.dataset.pageNumber) <= targetPageNum) {
+                    const img = container.querySelector('img');
+                    if (img && !img.complete) {
+                        img.removeAttribute('loading'); // отменяем lazy
+                        pending.push(new Promise(resolve => {
+                            img.addEventListener('load',  resolve, { once: true });
+                            img.addEventListener('error', resolve, { once: true });
+                        }));
+                    }
+                }
+            });
+
+            Promise.all(pending).then(() => {
+                target.scrollIntoView({ behavior: 'instant' });
+            });
+        }
     }
 })();
 </script>

@@ -36,14 +36,15 @@
                 <thead class="bg-gray-50 border-b border-gray-200">
                     <tr>
                         <th class="text-left px-4 py-3 font-medium text-gray-600 w-1/4">Слово / фраза</th>
-                        <th class="text-left px-4 py-3 font-medium text-gray-600 w-1/4">Перевод / определение</th>
+                        <th class="text-left px-4 py-3 font-medium text-gray-600 w-1/4">Перевод</th>
                         <th class="text-left px-4 py-3 font-medium text-gray-600">Комментарий</th>
                         <th class="text-left px-4 py-3 font-medium text-gray-600 w-1/5">Источник</th>
+                        <th class="px-4 py-3 w-8"></th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
                     @foreach ($notes as $note)
-                        <tr class="hover:bg-gray-50">
+                        <tr class="hover:bg-gray-50" data-note-id="{{ $note->id }}">
                             <td class="px-4 py-3 font-medium text-gray-900">
                                 {{ $note->phrase }}
                             </td>
@@ -61,6 +62,14 @@
                                         {{ $note->page->chapter->title }}, стр. {{ $note->page->page_number }}
                                     </a>
                                 @endif
+                            </td>
+                            <td class="px-4 py-3 text-right">
+                                <button type="button"
+                                        onclick="deleteNote({{ $note->id }}, this)"
+                                        class="text-gray-300 hover:text-red-500 transition-colors cursor-pointer"
+                                        title="Удалить">
+                                    ✕
+                                </button>
                             </td>
                         </tr>
                     @endforeach
@@ -81,3 +90,18 @@
     @endif
 
 </x-layouts.app>
+
+<script>
+function deleteNote(id, btn) {
+    if (!confirm('Удалить слово?')) return;
+
+    fetch(`/api/notes/${id}`, {
+        method: 'DELETE',
+        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+    }).then(r => {
+        if (r.ok) {
+            btn.closest('tr').remove();
+        }
+    });
+}
+</script>
