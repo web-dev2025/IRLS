@@ -190,7 +190,10 @@
             const w = (Math.abs(endX - startX) / rect.width)  * 100;
             const h = (Math.abs(endY - startY) / rect.height) * 100;
 
+            // Crop selected area and run OCR before opening modal
+            const base64 = cropToBase64(img, startX, endX, startY, endY, rect);
             openModal(container, x, y, w, h);
+            runOcr(base64);
             activeCanvas = null;
         });
     });
@@ -318,7 +321,7 @@
         const popup = document.createElement('div');
         popup.className = 'note-popup';
         popup.style.cssText = `
-            position: fixed;
+            position: absolute;
             z-index: 100;
             background: white;
             border-radius: 10px;
@@ -363,6 +366,47 @@
                 document.removeEventListener('click', handler);
             }, { once: true });
         }, 10);
+    }
+
+    // ── OCR ───────────────────────────────────────────────────────
+    function cropToBase64(img, startX, endX, startY, endY, rect) {
+        const scaleX = img.naturalWidth  / rect.width;
+        const scaleY = img.naturalHeight / rect.height;
+
+        const cropX = Math.min(startX, endX) * scaleX;
+        const cropY = Math.min(startY, endY) * scaleY;
+        const cropW = Math.abs(endX - startX) * scaleX;
+        const cropH = Math.abs(endY - startY) * scaleY;
+
+        const tmp = document.createElement('canvas');
+        tmp.width  = cropW;
+        tmp.height = cropH;
+        tmp.getContext('2d').drawImage(img, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
+
+        return tmp.toDataURL('image/png');
+    }
+
+    function runOcr(base64) {
+        const phraseInput = document.getElementById('note-phrase');
+        phraseInput.placeholder = 'Распознавание...';
+
+        fetch('/api/ocr', {
+            method:  'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            },
+            body: JSON.stringify({ image: base64 }),
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.text) {
+                phraseInput.value = data.text;
+            }
+        })
+        .finally(() => {
+            phraseInput.placeholder = 'Например: peculiar';
+        });
     }
 
     // ── Load existing notes ───────────────────────────────────────

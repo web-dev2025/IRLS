@@ -9,12 +9,18 @@ RUN apt-get update && apt-get install -y \
     libsqlite3-dev \
     libzip-dev \
     libonig-dev \
-    && docker-php-ext-install pdo pdo_sqlite zip mbstring \
+    libfreetype6-dev \
+    libjpeg62-turbo-dev \
+    libpng-dev \
+    tesseract-ocr \
+    tesseract-ocr-eng \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install gd pdo pdo_sqlite zip mbstring \
     && rm -rf /var/lib/apt/lists/*
 
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
     && apt-get install -y nodejs
- 
+
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
