@@ -322,7 +322,7 @@
         popup.className = 'note-popup';
         popup.style.cssText = `
             position: absolute;
-            z-index: 100;
+            z-index: 10;
             background: white;
             border-radius: 10px;
             padding: 14px 16px;
