@@ -11,7 +11,7 @@
 
     <nav class="bg-white border-b border-gray-200">
         <div class="max-w-5xl mx-auto px-4 flex items-center h-14 gap-6">
-            <a href="{{ route('categories.index') }}" class="font-semibold text-gray-900 hover:text-gray-600" title="Interactive reading/learning system">
+            <a href="{{ route('home') }}" class="font-semibold text-gray-900 hover:text-gray-600" title="Interactive reading/learning system">
                 IRLS
             </a>
             <div class="flex items-center gap-4 text-sm">

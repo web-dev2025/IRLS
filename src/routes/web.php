@@ -8,7 +8,7 @@ use App\Http\Controllers\ChapterController;
 use App\Http\Controllers\DictionaryController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', fn () => redirect()->route('categories.index'));
+Route::get('/', fn () => view('welcome'))->name('home');
 
 Route::resource('categories', CategoryController::class);
 
