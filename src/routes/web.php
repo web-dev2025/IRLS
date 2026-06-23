@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\DictionaryController as ApiDictionaryController;
 use App\Http\Controllers\Api\NoteController;
 use App\Http\Controllers\Api\OcrController;
+use App\Http\Controllers\Api\TranslateController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ChapterController;
 use App\Http\Controllers\DictionaryController;
@@ -29,4 +30,5 @@ Route::prefix('api')->name('api.')->group(function () {
     Route::delete('notes/{note}', [NoteController::class, 'destroy'])->name('notes.destroy');
     Route::get('dictionary/{word}', [ApiDictionaryController::class, 'lookup'])->name('dictionary.lookup');
     Route::post('ocr', [OcrController::class, 'recognize'])->name('ocr');
+    Route::get('translate/{text}', [TranslateController::class, 'translate'])->name('translate');
 });

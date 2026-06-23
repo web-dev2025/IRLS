@@ -70,7 +70,13 @@
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Перевод</label>
+                <div class="flex items-center justify-between mb-1">
+                    <label class="block text-sm font-medium text-gray-700">Перевод</label>
+                    <button id="btn-translate" type="button"
+                            class="text-xs text-blue-600 hover:text-blue-800">
+                        Найти перевод
+                    </button>
+                </div>
                 <input type="text" id="note-translation" placeholder="Перевод"
                        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-500">
             </div>
@@ -105,11 +111,12 @@
 
 <script>
 (function () {
-    const modal     = document.getElementById('note-modal');
-    const backdrop  = document.getElementById('modal-backdrop');
-    const btnCancel = document.getElementById('btn-cancel-note');
-    const btnSave   = document.getElementById('btn-save-note');
-    const btnLookup = document.getElementById('btn-lookup');
+    const modal        = document.getElementById('note-modal');
+    const backdrop     = document.getElementById('modal-backdrop');
+    const btnCancel    = document.getElementById('btn-cancel-note');
+    const btnSave      = document.getElementById('btn-save-note');
+    const btnLookup    = document.getElementById('btn-lookup');
+    const btnTranslate = document.getElementById('btn-translate');
 
     let activeCanvas = null;
     let drawing = false;
@@ -220,6 +227,30 @@
 
     backdrop.addEventListener('click', closeModal);
     btnCancel.addEventListener('click', closeModal);
+
+    // ── Translation (MyMemory) ────────────────────────────────────
+    btnTranslate.addEventListener('click', () => {
+        const word = document.getElementById('note-phrase').value.trim();
+        if (!word) return;
+
+        btnTranslate.textContent = 'Загрузка...';
+        btnTranslate.disabled    = true;
+
+        fetch(`/api/translate/${encodeURIComponent(word)}`)
+            .then(r => r.json())
+            .then(data => {
+                if (data.translation) {
+                    document.getElementById('note-translation').value = data.translation;
+                } else {
+                    alert('Перевод не найден');
+                }
+            })
+            .catch(() => alert('Ошибка запроса'))
+            .finally(() => {
+                btnTranslate.textContent = 'Найти перевод';
+                btnTranslate.disabled    = false;
+            });
+    });
 
     // ── Dictionary lookup ─────────────────────────────────────────
     btnLookup.addEventListener('click', () => {
