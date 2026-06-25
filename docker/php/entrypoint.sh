@@ -15,6 +15,10 @@ if [ ! -f storage/.app_initialized ]; then
 
   php artisan key:generate --force
 
+  if [ ! -L public/storage ]; then
+    php artisan storage:link
+  fi
+
   mkdir -p database
   touch database/database.sqlite
 
