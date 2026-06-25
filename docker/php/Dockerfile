@@ -24,5 +24,3 @@ RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
-
-RUN npm install && npm run build
