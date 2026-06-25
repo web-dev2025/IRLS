@@ -1,10 +1,11 @@
 cp src/.env.example src/.env
 touch src/database/database.sqlite
 
+docker compose run --rm app composer install
+
 docker compose build
 docker compose up -d
 
-docker compose exec app composer install
 docker compose exec app php artisan key:generate
 docker compose exec app php artisan storage:link
 docker compose exec app php artisan migrate
