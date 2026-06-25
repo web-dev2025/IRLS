@@ -25,5 +25,4 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
-RUN npm ci
-RUN npm run build
+RUN npm install && npm run build
