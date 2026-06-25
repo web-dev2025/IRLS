@@ -12,10 +12,11 @@ services:
     working_dir: /var/www/html
     command: >
       sh -c "
-      composer install --no-interaction &&
-      php artisan serve --host=0.0.0.0 --port=80
+      mkdir -p database &&
+      touch database/database.sqlite &&
+      php artisan migrate --force &&
+      php artisan serve --host=0.0.0.0 --port=8000
       "
-
   queue:
     build:
       context: .
