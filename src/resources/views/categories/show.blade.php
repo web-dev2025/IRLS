@@ -36,12 +36,6 @@
                     </div>
 
                     <div class="flex items-center gap-4 ml-4 shrink-0">
-                        {{-- Read button (active only when ready) --}}
-                        @if ($chapter->status === 'ready')
-                            <a href="{{ route('chapters.read', $chapter) }}"
-                               class="text-sm text-blue-600 hover:text-blue-800">Читать</a>
-                        @endif
-
                         {{-- Status badge --}}
                         <span class="chapter-status-badge">
                             @if ($chapter->status === 'ready')
@@ -58,6 +52,12 @@
                                 </span>
                             @endif
                         </span>
+
+                        {{-- Read button (active only when ready) --}}
+                        @if ($chapter->status === 'ready')
+                            <a href="{{ route('chapters.read', $chapter) }}"
+                               class="text-sm text-blue-600 hover:text-blue-800">Читать</a>
+                        @endif
 
                         <form action="{{ route('categories.chapters.destroy', [$category, $chapter]) }}" method="POST"
                               onsubmit="return confirm('Удалить главу «{{ $chapter->title }}»?')">

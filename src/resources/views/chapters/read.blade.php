@@ -432,7 +432,7 @@
         .then(r => r.json())
         .then(data => {
             if (data.text) {
-                phraseInput.value = data.text;
+                phraseInput.value = data.text.toLowerCase();
             }
         })
         .finally(() => {
