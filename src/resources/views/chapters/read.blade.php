@@ -21,13 +21,23 @@
 <body class="min-h-screen">
 
     {{-- Top bar --}}
-    <div class="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-sm border-b border-white/10 px-4 h-12 flex items-center justify-between">
+    <div class="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-sm border-b border-white/10 px-4 h-12 flex items-center justify-between gap-2">
         <a href="{{ route('categories.show', $chapter->category) }}"
-           class="text-sm text-gray-400 hover:text-white flex items-center gap-1">
+           class="text-sm text-gray-400 hover:text-white flex items-center gap-1 shrink-0">
             ← {{ $chapter->category->name }}
         </a>
-        <span class="text-sm text-gray-400">{{ $chapter->title }}</span>
-        <span class="text-sm text-gray-500">{{ $pages->count() }} стр.</span>
+        <div class="flex items-center gap-3 min-w-0">
+            @if ($prevChapter)
+                <a href="{{ route('chapters.read', $prevChapter) }}"
+                   class="text-sm text-gray-500 hover:text-white shrink-0" title="{{ $prevChapter->title }}">‹ Пред.</a>
+            @endif
+            <span class="text-sm text-gray-400 truncate">{{ $chapter->title }}</span>
+            @if ($nextChapter)
+                <a href="{{ route('chapters.read', $nextChapter) }}"
+                   class="text-sm text-gray-500 hover:text-white shrink-0" title="{{ $nextChapter->title }}">След. ›</a>
+            @endif
+        </div>
+        <span class="text-sm text-gray-500 shrink-0">{{ $pages->count() }} стр.</span>
     </div>
 
     {{-- Pages --}}
@@ -44,6 +54,32 @@
                 <canvas></canvas>
             </div>
         @endforeach
+
+        {{-- Bottom navigation --}}
+        <div class="flex items-center justify-between px-4 py-8">
+            @if ($prevChapter)
+                <a href="{{ route('chapters.read', $prevChapter) }}"
+                   class="text-sm text-gray-400 hover:text-white flex items-center gap-2 border border-white/10 rounded-lg px-4 py-2 hover:border-white/30 transition-colors">
+                    ← {{ $prevChapter->title }}
+                </a>
+            @else
+                <span></span>
+            @endif
+
+            <a href="{{ route('categories.show', $chapter->category) }}"
+               class="text-xs text-gray-600 hover:text-gray-400">
+                {{ $chapter->category->name }}
+            </a>
+
+            @if ($nextChapter)
+                <a href="{{ route('chapters.read', $nextChapter) }}"
+                   class="text-sm text-gray-400 hover:text-white flex items-center gap-2 border border-white/10 rounded-lg px-4 py-2 hover:border-white/30 transition-colors">
+                    {{ $nextChapter->title }} →
+                </a>
+            @else
+                <span></span>
+            @endif
+        </div>
     </div>
 
     @php

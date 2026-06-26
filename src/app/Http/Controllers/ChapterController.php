@@ -55,7 +55,19 @@ class ChapterController extends Controller
 
         $pages = $chapter->pages()->with('notes')->orderBy('page_number')->get();
 
-        return view('chapters.read', compact('chapter', 'pages'));
+        $prevChapter = $chapter->category->chapters()
+            ->where('sort_order', '<', $chapter->sort_order)
+            ->where('status', 'ready')
+            ->orderBy('sort_order', 'desc')
+            ->first();
+
+        $nextChapter = $chapter->category->chapters()
+            ->where('sort_order', '>', $chapter->sort_order)
+            ->where('status', 'ready')
+            ->orderBy('sort_order')
+            ->first();
+
+        return view('chapters.read', compact('chapter', 'pages', 'prevChapter', 'nextChapter'));
     }
 
     public function status(Chapter $chapter): JsonResponse
