@@ -28,6 +28,13 @@ class NoteController extends Controller
         return response()->json($note, 201);
     }
 
+    public function toggleLearned(Note $note): JsonResponse
+    {
+        $note->update(['is_learned' => !$note->is_learned]);
+
+        return response()->json(['is_learned' => $note->is_learned]);
+    }
+
     public function destroy(Note $note): JsonResponse
     {
         $note->delete();

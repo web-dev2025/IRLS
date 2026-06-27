@@ -15,11 +15,12 @@ class QuizController extends Controller
 
     public function index(Request $request): View
     {
-        $categories = Category::orderBy('name')->get();
-        $categoryId = $request->integer('category_id') ?: null;
-        $mode       = in_array($request->input('mode'), ['en-ru', 'ru-en'])
+        $categories  = Category::orderBy('name')->get();
+        $categoryId  = $request->integer('category_id') ?: null;
+        $mode        = in_array($request->input('mode'), ['en-ru', 'ru-en'])
             ? $request->input('mode')
             : 'en-ru';
+        $includeAll  = $request->boolean('all');
 
         $allNotes = Note::whereNotNull('translation')
             ->where('translation', '!=', '')
@@ -27,6 +28,7 @@ class QuizController extends Controller
             ->where('phrase', '!=', '')
             ->when($categoryId, fn ($q) => $q->whereHas('page.chapter',
                 fn ($q) => $q->where('category_id', $categoryId)))
+            ->when(!$includeAll, fn ($q) => $q->where('is_learned', false))
             ->select(['id', 'phrase', 'translation', 'comment'])
             ->get();
 
@@ -35,6 +37,7 @@ class QuizController extends Controller
                 'categories'  => $categories,
                 'categoryId'  => $categoryId,
                 'mode'        => $mode,
+                'includeAll'  => $includeAll,
                 'tooFew'      => true,
                 'tooFewCount' => $allNotes->count(),
                 'questions'   => '[]',
@@ -87,6 +90,7 @@ class QuizController extends Controller
             'categories'  => $categories,
             'categoryId'  => $categoryId,
             'mode'        => $mode,
+            'includeAll'  => $includeAll,
             'tooFew'      => false,
             'tooFewCount' => 0,
             'questions'   => json_encode($questions, JSON_UNESCAPED_UNICODE),

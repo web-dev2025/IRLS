@@ -103,6 +103,15 @@
                         @endforeach
                     </select>
                 @endif
+
+                {{-- Включая выученные --}}
+                <label class="flex items-center gap-1.5 text-sm text-gray-500 cursor-pointer select-none">
+                    <input type="checkbox"
+                           onchange="toggleAll(this.checked)"
+                           {{ $includeAll ? 'checked' : '' }}
+                           class="rounded border-gray-300 cursor-pointer">
+                    Включая выученные
+                </label>
             </div>
 
             <span class="text-sm text-gray-400" id="counter-text"></span>
@@ -277,18 +286,23 @@ function showScore() {
     }
 }
 
+const INCLUDE_ALL = @json($includeAll);
+
 function buildParams(ov) {
     const p   = new URLSearchParams();
     const cat = ov.categoryId !== undefined ? ov.categoryId : CATEGORY_ID;
     const mod = ov.mode       !== undefined ? ov.mode       : MODE;
+    const all = ov.all        !== undefined ? ov.all        : INCLUDE_ALL;
     if (cat) p.set('category_id', cat);
     if (mod !== 'en-ru') p.set('mode', mod);
+    if (all) p.set('all', '1');
     return p.toString() ? '?' + p.toString() : '';
 }
 
-function playAgain()       { window.location.href = '/quiz' + buildParams({}); }
-function switchMode(m)     { window.location.href = '/quiz' + buildParams({ mode: m }); }
-function switchCategory(c) { window.location.href = '/quiz' + buildParams({ categoryId: c || null }); }
+function playAgain()        { window.location.href = '/quiz' + buildParams({}); }
+function switchMode(m)      { window.location.href = '/quiz' + buildParams({ mode: m }); }
+function switchCategory(c)  { window.location.href = '/quiz' + buildParams({ categoryId: c || null }); }
+function toggleAll(checked) { window.location.href = '/quiz' + buildParams({ all: checked }); }
 
 document.addEventListener('keydown', e => {
     if (['1','2','3','4'].includes(e.key)) {

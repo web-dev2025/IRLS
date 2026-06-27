@@ -3,9 +3,10 @@
     <div class="flex items-start justify-between mb-6 gap-4">
         <h1 class="text-2xl font-semibold">Словарь</h1>
 
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-3 flex-wrap justify-end">
             {{-- Filter by category --}}
-            <form method="GET" action="{{ route('dictionary.index') }}" class="flex items-center gap-2">
+            <form method="GET" action="{{ route('dictionary.index') }}" class="flex items-center gap-2" id="filter-form">
+                <input type="hidden" name="learned" value="{{ request('learned') }}">
                 <select name="category_id" onchange="this.form.submit()"
                         class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-gray-500 bg-white">
                     <option value="">Все серии</option>
@@ -14,6 +15,14 @@
                             {{ $category->name }}
                         </option>
                     @endforeach
+                </select>
+
+                {{-- Learned filter --}}
+                <select name="learned" onchange="this.form.submit()"
+                        class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-gray-500 bg-white">
+                    <option value="" {{ request('learned') === null || request('learned') === '' ? 'selected' : '' }}>Все слова</option>
+                    <option value="0" {{ request('learned') === '0' ? 'selected' : '' }}>Не выучены</option>
+                    <option value="1" {{ request('learned') === '1' ? 'selected' : '' }}>Выучены</option>
                 </select>
             </form>
 
@@ -41,6 +50,7 @@
             <table class="w-full text-sm">
                 <thead class="bg-gray-50 border-b border-gray-200">
                     <tr>
+                        <th class="px-3 py-3 w-8"></th>
                         <th class="text-left px-4 py-3 font-medium text-gray-600 w-1/4">Слово / фраза</th>
                         <th class="text-left px-4 py-3 font-medium text-gray-600 w-1/4">Перевод</th>
                         <th class="text-left px-4 py-3 font-medium text-gray-600">Комментарий</th>
@@ -50,14 +60,26 @@
                 </thead>
                 <tbody class="divide-y divide-gray-100">
                     @foreach ($notes as $note)
-                        <tr class="hover:bg-gray-50" data-note-id="{{ $note->id }}">
-                            <td class="px-4 py-3 font-medium text-gray-900">
+                        <tr class="{{ $note->is_learned ? 'bg-gray-50' : 'hover:bg-gray-50' }}"
+                            data-note-id="{{ $note->id }}">
+
+                            {{-- Learned toggle --}}
+                            <td class="px-3 py-3 text-center">
+                                <button type="button"
+                                        onclick="toggleLearned({{ $note->id }}, this)"
+                                        class="transition-colors cursor-pointer text-base leading-none {{ $note->is_learned ? 'text-green-500 hover:text-gray-300' : 'text-gray-200 hover:text-green-400' }}"
+                                        title="{{ $note->is_learned ? 'Отметить как невыученное' : 'Отметить как выученное' }}">
+                                    ✓
+                                </button>
+                            </td>
+
+                            <td class="px-4 py-3 font-medium {{ $note->is_learned ? 'text-gray-400' : 'text-gray-900' }}">
                                 {{ $note->phrase }}
                             </td>
-                            <td class="px-4 py-3 text-gray-600">
+                            <td class="px-4 py-3 {{ $note->is_learned ? 'text-gray-400' : 'text-gray-600' }}">
                                 {{ $note->translation ?: '—' }}
                             </td>
-                            <td class="px-4 py-3 text-gray-500 text-xs">
+                            <td class="px-4 py-3 text-gray-400 text-xs">
                                 {{ $note->comment ?: '' }}
                             </td>
                             <td class="px-4 py-3 text-gray-400 text-xs">
@@ -91,13 +113,49 @@
         @endif
 
         <p class="mt-3 text-xs text-gray-400">
-            Всего: {{ $notes->total() }} {{ trans_choice('слово|слова|слов', $notes->total()) }}
+            Всего: {{ $totalCount }} {{ trans_choice('слово|слова|слов', $totalCount) }}
+            @if ($learnedCount > 0)
+                · <span class="text-green-500">{{ $learnedCount }} выучено</span>
+                · {{ $totalCount - $learnedCount }} осталось
+            @endif
         </p>
     @endif
 
 </x-layouts.app>
 
 <script>
+function toggleLearned(id, btn) {
+    fetch(`/api/notes/${id}/learned`, {
+        method: 'PATCH',
+        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+    })
+    .then(r => r.json())
+    .then(data => {
+        const row = btn.closest('tr');
+        const learned = data.is_learned;
+
+        // Кнопка ✓
+        btn.className = 'transition-colors cursor-pointer text-base leading-none ' +
+            (learned ? 'text-green-500 hover:text-gray-300' : 'text-gray-200 hover:text-green-400');
+        btn.title = learned ? 'Отметить как невыученное' : 'Отметить как выученное';
+
+        // Строка
+        const phraseCell = row.cells[1];
+        const transCell  = row.cells[2];
+        if (learned) {
+            row.classList.add('bg-gray-50');
+            row.classList.remove('hover:bg-gray-50');
+            phraseCell.className = phraseCell.className.replace('text-gray-900', 'text-gray-400');
+            transCell.className  = transCell.className.replace('text-gray-600', 'text-gray-400');
+        } else {
+            row.classList.remove('bg-gray-50');
+            row.classList.add('hover:bg-gray-50');
+            phraseCell.className = phraseCell.className.replace('text-gray-400', 'text-gray-900');
+            transCell.className  = transCell.className.replace('text-gray-400', 'text-gray-600');
+        }
+    });
+}
+
 function deleteNote(id, btn) {
     if (!confirm('Удалить слово?')) return;
 
@@ -105,9 +163,7 @@ function deleteNote(id, btn) {
         method: 'DELETE',
         headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
     }).then(r => {
-        if (r.ok) {
-            btn.closest('tr').remove();
-        }
+        if (r.ok) btn.closest('tr').remove();
     });
 }
 </script>
