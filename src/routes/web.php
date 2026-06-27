@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\TranslateController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ChapterController;
 use App\Http\Controllers\DictionaryController;
+use App\Http\Controllers\QuizController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => view('welcome'))->name('home');
@@ -24,6 +25,7 @@ Route::get('chapters/{chapter}/read', [ChapterController::class, 'read'])->name(
 
 Route::get('dictionary', [DictionaryController::class, 'index'])->name('dictionary.index');
 Route::get('dictionary/export', [DictionaryController::class, 'export'])->name('dictionary.export');
+Route::get('quiz', [QuizController::class, 'index'])->name('quiz.index');
 
 Route::prefix('api')->name('api.')->group(function () {
     Route::post('notes', [NoteController::class, 'store'])->name('notes.store');

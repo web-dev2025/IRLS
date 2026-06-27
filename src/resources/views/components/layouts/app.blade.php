@@ -23,6 +23,10 @@
                    class="text-gray-500 hover:text-gray-900 {{ request()->routeIs('dictionary.*') ? 'text-gray-900 font-medium' : '' }}">
                     Словарь
                 </a>
+                <a href="{{ route('quiz.index') }}"
+                   class="text-gray-500 hover:text-gray-900 {{ request()->routeIs('quiz.*') ? 'text-gray-900 font-medium' : '' }}">
+                    Тренировка
+                </a>
             </div>
         </div>
     </nav>

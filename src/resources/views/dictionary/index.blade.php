@@ -17,6 +17,12 @@
                 </select>
             </form>
 
+            {{-- Quiz --}}
+            <a href="{{ route('quiz.index', request()->only('category_id')) }}"
+               class="px-4 py-1.5 bg-white border border-gray-200 text-gray-700 text-sm rounded-lg hover:bg-gray-50">
+                Тренировка
+            </a>
+
             {{-- Export --}}
             <a href="{{ route('dictionary.export', request()->only('category_id')) }}"
                class="px-4 py-1.5 bg-gray-900 text-white text-sm rounded-lg hover:bg-gray-700">
