@@ -58,7 +58,7 @@ class ChapterController extends Controller
         $prevChapter = $chapter->category->chapters()
             ->where('sort_order', '<', $chapter->sort_order)
             ->where('status', 'ready')
-            ->orderBy('sort_order', 'desc')
+            ->reorder('sort_order', 'desc')
             ->first();
 
         $nextChapter = $chapter->category->chapters()
