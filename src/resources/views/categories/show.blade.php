@@ -8,10 +8,16 @@
                 <p class="text-sm text-gray-500 mt-0.5">{{ $category->description }}</p>
             @endif
         </div>
-        <a href="{{ route('categories.chapters.create', $category) }}"
-           class="px-4 py-2 bg-gray-900 text-white text-sm rounded-lg hover:bg-gray-700 shrink-0">
-            + Добавить главу
-        </a>
+        <div class="flex items-center gap-2 shrink-0">
+            <a href="{{ route('categories.chapters.sort', $category) }}"
+               class="px-4 py-2 bg-white border border-gray-200 text-gray-700 text-sm rounded-lg hover:bg-gray-50">
+                Сортировка
+            </a>
+            <a href="{{ route('categories.chapters.create', $category) }}"
+               class="px-4 py-2 bg-gray-900 text-white text-sm rounded-lg hover:bg-gray-700">
+                + Добавить главу
+            </a>
+        </div>
     </div>
 
     @if ($chapters->isEmpty())

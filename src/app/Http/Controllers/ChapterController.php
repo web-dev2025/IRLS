@@ -70,6 +70,24 @@ class ChapterController extends Controller
         return view('chapters.read', compact('chapter', 'pages', 'prevChapter', 'nextChapter'));
     }
 
+    public function sort(Category $category): View
+    {
+        $chapters = $category->chapters()->get();
+
+        return view('chapters.sort', compact('category', 'chapters'));
+    }
+
+    public function reorder(Request $request, Category $category): JsonResponse
+    {
+        $ids = $request->validate(['ids' => 'required|array', 'ids.*' => 'integer'])['ids'];
+
+        foreach ($ids as $index => $id) {
+            $category->chapters()->where('id', $id)->update(['sort_order' => $index + 1]);
+        }
+
+        return response()->json(['ok' => true]);
+    }
+
     public function status(Chapter $chapter): JsonResponse
     {
         return response()->json([

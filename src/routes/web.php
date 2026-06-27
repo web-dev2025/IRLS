@@ -18,6 +18,8 @@ Route::prefix('categories/{category}/chapters')->name('categories.chapters.')->g
     Route::get('create', [ChapterController::class, 'create'])->name('create');
     Route::post('/', [ChapterController::class, 'store'])->name('store');
     Route::delete('{chapter}', [ChapterController::class, 'destroy'])->name('destroy');
+    Route::get('sort', [ChapterController::class, 'sort'])->name('sort');
+    Route::patch('reorder', [ChapterController::class, 'reorder'])->name('reorder');
 });
 
 Route::get('chapters/{chapter}/status', [ChapterController::class, 'status'])->name('chapters.status');
