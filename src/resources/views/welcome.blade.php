@@ -1,6 +1,6 @@
 <x-layouts.app title="IRLS — учи английский через мангу">
 
-    <div class="max-w-2xl mx-auto">
+    <div class="w-full">
 
         <div class="mb-10">
             <h1 class="text-3xl font-semibold text-gray-900 mb-3">
