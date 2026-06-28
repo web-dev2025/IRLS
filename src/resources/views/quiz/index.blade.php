@@ -6,7 +6,7 @@
  * чей className полностью заменяет — Tailwind их не увидит при сборке.
  */
 
-/* Dark mode overrides for JS-applied classes */
+/* Dark mode */
 .dark .quiz-phrase { color: #f3f4f6; }
 .dark .quiz-phrase.mode-ru { color: #d1d5db; }
 .dark .progress-block { background: #374151; }
