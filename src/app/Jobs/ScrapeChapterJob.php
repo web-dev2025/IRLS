@@ -43,12 +43,17 @@ class ScrapeChapterJob implements ShouldQueue
 
     private function resolveImageUrls(): array
     {
-        // Manual URLs take priority if provided
+        // Manual URLs take highest priority
         if ($this->chapter->image_urls) {
             return array_filter(
                 array_map('trim', explode("\n", $this->chapter->image_urls)),
                 fn($url) => filter_var($url, FILTER_VALIDATE_URL)
             );
+        }
+
+        // Pasted browser HTML (bypasses JS rendering and Cloudflare)
+        if ($this->chapter->source_html) {
+            return $this->parseHtml($this->chapter->source_html, $this->chapter->source_url);
         }
 
         if ($this->chapter->source_url) {
@@ -69,9 +74,14 @@ class ScrapeChapterJob implements ShouldQueue
             return [];
         }
 
+        return $this->parseHtml($response->body(), $url);
+    }
+
+    private function parseHtml(string $html, ?string $baseUrl = null): array
+    {
         $dom = new \DOMDocument();
         libxml_use_internal_errors(true);
-        $dom->loadHTML($response->body());
+        $dom->loadHTML($html);
         libxml_clear_errors();
 
         $xpath = new \DOMXPath($dom);
@@ -86,7 +96,7 @@ class ScrapeChapterJob implements ShouldQueue
                 ?: $node->getAttribute('src');
 
             if ($src && ! str_starts_with($src, 'data:') && ! $this->isLikelyIcon($src)) {
-                $imageUrls[] = $this->makeAbsolute($src, $url);
+                $imageUrls[] = $baseUrl ? $this->makeAbsolute($src, $baseUrl) : $src;
             }
         }
 

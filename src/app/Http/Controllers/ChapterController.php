@@ -20,15 +20,17 @@ class ChapterController extends Controller
     public function store(Request $request, Category $category): RedirectResponse
     {
         $data = $request->validate([
-            'title'      => 'required|string|max:255',
-            'source_url' => 'nullable|url|max:2048',
-            'image_urls' => 'nullable|string',
+            'title'       => 'required|string|max:255',
+            'source_url'  => 'nullable|url|max:2048',
+            'source_html' => 'nullable|string',
+            'image_urls'  => 'nullable|string',
         ]);
 
         $chapter = $category->chapters()->create([
-            'title'      => $data['title'],
-            'source_url' => $data['source_url'] ?? null,
-            'image_urls' => $data['image_urls'] ?? null,
+            'title'       => $data['title'],
+            'source_url'  => $data['source_url'] ?? null,
+            'source_html' => $data['source_html'] ?? null,
+            'image_urls'  => $data['image_urls'] ?? null,
             'status'     => 'pending',
             'sort_order' => $category->chapters()->max('sort_order') + 1,
         ]);

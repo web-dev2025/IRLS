@@ -8,7 +8,7 @@
 
     <h1 class="text-2xl font-semibold mb-6">Добавить главу</h1>
 
-    <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-6 max-w-lg">
+    <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-6 w-full">
         <form action="{{ route('categories.chapters.store', $category) }}" method="POST" class="space-y-5">
             @csrf
 
@@ -42,7 +42,31 @@
                 <div class="flex-1 border-t border-gray-200 dark:border-gray-700"></div>
             </div>
 
-            {{-- Option B: Manual image URLs --}}
+            {{-- Option B: Pasted HTML from browser --}}
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    HTML страницы
+                    <span class="text-gray-400 dark:text-gray-500 font-normal">(если сайт не даётся скрейперу)</span>
+                </label>
+                <textarea name="source_html" rows="5"
+                          placeholder="Открой страницу в браузере, дождись загрузки картинок, затем в консоли (F12) выполни: copy(document.documentElement.outerHTML) — и вставь сюда."
+                          class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm font-mono bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-gray-500 dark:focus:border-gray-400 @error('source_html') border-red-400 @enderror">{{ old('source_html') }}</textarea>
+                <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">
+                    Или через Elements → правая кнопка на &lt;html&gt; → Copy → Copy outerHTML.
+                    Обходит Cloudflare и ленивую загрузку.
+                </p>
+                @error('source_html')
+                    <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div class="relative flex items-center gap-3">
+                <div class="flex-1 border-t border-gray-200 dark:border-gray-700"></div>
+                <span class="text-xs text-gray-400 dark:text-gray-500">или</span>
+                <div class="flex-1 border-t border-gray-200 dark:border-gray-700"></div>
+            </div>
+
+            {{-- Option C: Manual image URLs --}}
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Ссылки на изображения
@@ -51,7 +75,7 @@
                 <textarea name="image_urls" rows="6"
                           placeholder="https://example.com/page1.jpg&#10;https://example.com/page2.jpg&#10;..."
                           class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm font-mono bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-gray-500 dark:focus:border-gray-400 @error('image_urls') border-red-400 @enderror">{{ old('image_urls') }}</textarea>
-                <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">Используется если URL страницы не указан или скрейпинг не сработал.</p>
+                <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">Используется если остальные способы не сработали.</p>
                 @error('image_urls')
                     <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
                 @enderror
