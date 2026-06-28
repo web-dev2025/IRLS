@@ -13,6 +13,11 @@
 .chapter-row.drag-over { box-shadow: 0 0 0 2px #6b7280; }
 .drag-icon { color: #d1d5db; font-size: 18px; line-height: 1; flex-shrink: 0; }
 .chapter-row:hover .drag-icon { color: #9ca3af; }
+
+.dark .chapter-row { background: #111827; border-color: #374151; }
+.dark .chapter-row.drag-over { box-shadow: 0 0 0 2px #6b7280; }
+.dark .drag-icon { color: #4b5563; }
+.dark .chapter-row:hover .drag-icon { color: #6b7280; }
 </style>
 
 <div class="max-w-xl mx-auto">
@@ -20,28 +25,28 @@
     <div class="flex items-center justify-between mb-6">
         <div>
             <a href="{{ route('categories.show', $category) }}"
-               class="text-sm text-gray-500 hover:text-gray-900">← {{ $category->name }}</a>
+               class="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100">← {{ $category->name }}</a>
             <h1 class="text-xl font-semibold mt-1">Порядок глав</h1>
         </div>
-        <span class="text-sm text-gray-400" id="save-status"></span>
+        <span class="text-sm text-gray-400 dark:text-gray-500" id="save-status"></span>
     </div>
 
     @if ($chapters->isEmpty())
-        <p class="text-gray-400 text-sm">Глав пока нет.</p>
+        <p class="text-gray-400 dark:text-gray-500 text-sm">Глав пока нет.</p>
     @else
         <div class="flex flex-col gap-2" id="sort-list">
             @foreach ($chapters as $chapter)
                 <div class="chapter-row" data-chapter-id="{{ $chapter->id }}">
                     <span class="drag-icon">⠿</span>
                     <div class="flex-1 min-w-0">
-                        <div class="font-medium text-gray-900 truncate">{{ $chapter->title }}</div>
-                        <div class="text-xs text-gray-400 mt-0.5">
+                        <div class="font-medium text-gray-900 dark:text-gray-100 truncate">{{ $chapter->title }}</div>
+                        <div class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
                             @if ($chapter->status === 'ready')
                                 {{ $chapter->pages()->count() }} стр.
                             @elseif ($chapter->status === 'failed')
-                                <span class="text-red-400">Ошибка загрузки</span>
+                                <span class="text-red-400 dark:text-red-500">Ошибка загрузки</span>
                             @else
-                                <span class="text-gray-400">Загружается...</span>
+                                <span class="text-gray-400 dark:text-gray-500">Загружается...</span>
                             @endif
                         </div>
                     </div>

@@ -2,41 +2,41 @@
 
     <div class="flex items-center justify-between mb-6">
         <div>
-            <a href="{{ route('categories.index') }}" class="text-sm text-gray-500 hover:text-gray-900">← Манга</a>
+            <a href="{{ route('categories.index') }}" class="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100">← Манга</a>
             <h1 class="text-2xl font-semibold mt-1">{{ $category->name }}</h1>
             @if ($category->description)
-                <p class="text-sm text-gray-500 mt-0.5">{{ $category->description }}</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{{ $category->description }}</p>
             @endif
         </div>
         <div class="flex items-center gap-2 shrink-0">
             <a href="{{ route('categories.chapters.sort', $category) }}"
-               class="px-4 py-2 bg-white border border-gray-200 text-gray-700 text-sm rounded-lg hover:bg-gray-50">
+               class="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 text-sm rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">
                 Сортировка
             </a>
             <a href="{{ route('categories.chapters.create', $category) }}"
-               class="px-4 py-2 bg-gray-900 text-white text-sm rounded-lg hover:bg-gray-700">
+               class="px-4 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm rounded-lg hover:bg-gray-700 dark:hover:bg-gray-100">
                 + Добавить главу
             </a>
         </div>
     </div>
 
     @if ($chapters->isEmpty())
-        <div class="text-center py-20 text-gray-400">
+        <div class="text-center py-20 text-gray-400 dark:text-gray-500">
             <p>Глав пока нет.</p>
-            <a href="{{ route('categories.chapters.create', $category) }}" class="mt-3 inline-block text-sm text-gray-600 underline">
+            <a href="{{ route('categories.chapters.create', $category) }}" class="mt-3 inline-block text-sm text-gray-600 dark:text-gray-400 underline">
                 Добавить первую
             </a>
         </div>
     @else
         <div class="grid grid-cols-1 gap-3">
             @foreach ($chapters as $chapter)
-                <div class="flex items-center justify-between bg-white border border-gray-200 rounded-lg px-5 py-4"
+                <div class="flex items-center justify-between bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-5 py-4"
                      data-chapter-id="{{ $chapter->id }}"
                      data-status="{{ $chapter->status }}">
 
                     <div>
                         <div class="font-medium">{{ $chapter->title }}</div>
-                        <div class="text-sm text-gray-400 mt-0.5">
+                        <div class="text-sm text-gray-400 dark:text-gray-500 mt-0.5">
                             <span class="chapter-pages-count">{{ $chapter->pages_count }}</span> стр.
                         </div>
                     </div>
@@ -45,11 +45,11 @@
                         {{-- Status badge --}}
                         <span class="chapter-status-badge">
                             @if ($chapter->status === 'ready')
-                                <span class="text-sm text-green-600 font-medium">Готово</span>
+                                <span class="text-sm text-green-600 dark:text-green-400 font-medium">Готово</span>
                             @elseif ($chapter->status === 'failed')
-                                <span class="text-sm text-red-500">Ошибка</span>
+                                <span class="text-sm text-red-500 dark:text-red-400">Ошибка</span>
                             @else
-                                <span class="text-sm text-gray-400 flex items-center gap-1">
+                                <span class="text-sm text-gray-400 dark:text-gray-500 flex items-center gap-1">
                                     <svg class="animate-spin h-3.5 w-3.5" fill="none" viewBox="0 0 24 24">
                                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
                                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
@@ -62,14 +62,14 @@
                         {{-- Read button (active only when ready) --}}
                         @if ($chapter->status === 'ready')
                             <a href="{{ route('chapters.read', $chapter) }}"
-                               class="text-sm text-blue-600 hover:text-blue-800">Читать</a>
+                               class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">Читать</a>
                         @endif
 
                         <form action="{{ route('categories.chapters.destroy', [$category, $chapter]) }}" method="POST"
                               onsubmit="return confirm('Удалить главу «{{ $chapter->title }}»?')">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="text-sm text-red-400 hover:text-red-600">Удалить</button>
+                            <button type="submit" class="text-sm text-red-400 dark:text-red-500 hover:text-red-600 dark:hover:text-red-400">Удалить</button>
                         </form>
                     </div>
                 </div>
@@ -103,17 +103,17 @@
                 pagesEl.textContent = data.pages_count;
 
                 if (data.status === 'ready') {
-                    badge.innerHTML = '<span class="text-sm text-green-600 font-medium">Готово</span>';
+                    badge.innerHTML = '<span class="text-sm text-green-600 dark:text-green-400 font-medium">Готово</span>';
                     const actionsDiv = badge.parentElement;
                     if (!actionsDiv.querySelector('.read-link')) {
                         const link = document.createElement('a');
                         link.href = `/chapters/${id}/read`;
-                        link.className = 'read-link text-sm text-blue-600 hover:text-blue-800';
+                        link.className = 'read-link text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300';
                         link.textContent = 'Читать';
                         actionsDiv.insertBefore(link, badge.nextSibling);
                     }
                 } else if (data.status === 'failed') {
-                    badge.innerHTML = '<span class="text-sm text-red-500">Ошибка</span>';
+                    badge.innerHTML = '<span class="text-sm text-red-500 dark:text-red-400">Ошибка</span>';
                 } else {
                     setTimeout(() => pollChapter(card), 2000);
                 }

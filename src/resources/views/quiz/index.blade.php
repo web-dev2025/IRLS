@@ -6,17 +6,32 @@
  * чей className полностью заменяет — Tailwind их не увидит при сборке.
  */
 
-/* Фраза вопроса — JS заменяет className целиком */
+/* Dark mode overrides for JS-applied classes */
+.dark .quiz-phrase { color: #f3f4f6; }
+.dark .quiz-phrase.mode-ru { color: #d1d5db; }
+.dark .progress-block { background: #374151; }
+.dark .option-btn { border-top-color: #374151; color: #d1d5db; }
+.dark .option-btn:hover:not(:disabled) { background: #1f2937; }
+.dark .option-btn.correct { background: #052e16; color: #86efac; }
+.dark .option-btn.wrong   { background: #450a0a; color: #fca5a5; }
+.dark .key-hint { background: #374151; border-color: #4b5563; color: #9ca3af; }
+.dark .option-btn.correct .key-hint { background: #14532d; color: #86efac; border-color: #15803d; }
+.dark .option-btn.wrong   .key-hint { background: #7f1d1d; color: #fca5a5; border-color: #991b1b; }
+.dark .feedback-text.ok   { color: #4ade80; }
+.dark .feedback-text.fail { color: #f87171; }
+.dark .hint-btn { color: #6b7280; border-color: #4b5563; }
+.dark .hint-btn:hover { color: #9ca3af; border-color: #6b7280; }
+.dark .hint-text { color: #6b7280; }
+
+/* Light mode and other styles */
 .quiz-phrase { font-size: 2.5rem; font-weight: 700; color: #111827; line-height: 1.15; min-height: 2.8rem; }
 .quiz-phrase.mode-ru { font-size: 1.6rem; font-weight: 500; color: #374151; }
 
-/* Прогресс-блоки — JS создаёт и добавляет классы состояний */
 .progress-block { flex: 1; height: 4px; border-radius: 9999px; background: #f3f4f6; transition: background-color .15s; }
 .progress-block.current      { background: #f59e0b; }
 .progress-block.done-correct { background: #22c55e; }
 .progress-block.done-wrong   { background: #ef4444; }
 
-/* Варианты ответов — JS создаёт кнопки и добавляет классы состояний */
 .option-btn {
     display: flex; align-items: center; gap: 16px;
     width: 100%; text-align: left; padding: 13px 24px;
@@ -28,7 +43,6 @@
 .option-btn.correct { background: #f0fdf4; color: #15803d; }
 .option-btn.wrong   { background: #fef2f2; color: #b91c1c; }
 
-/* Цифра-подсказка — часть innerHTML кнопки */
 .key-hint {
     display: inline-flex; align-items: center; justify-content: center;
     font-size: 11px; font-family: monospace; color: #9ca3af;
@@ -38,11 +52,9 @@
 .option-btn.correct .key-hint { background: #dcfce7; color: #15803d; border-color: #bbf7d0; }
 .option-btn.wrong   .key-hint { background: #fee2e2; color: #b91c1c; border-color: #fecaca; }
 
-/* Фидбек — JS добавляет ok/fail */
 .feedback-text.ok   { color: #16a34a; }
 .feedback-text.fail { color: #dc2626; }
 
-/* Кнопка подсказки и текст — JS создаёт */
 .hint-btn {
     margin-top: 10px; font-size: 12px; color: #9ca3af;
     background: none; border: 1px solid #e5e7eb; border-radius: 4px;
@@ -50,15 +62,17 @@
 }
 .hint-btn:hover { color: #6b7280; border-color: #d1d5db; }
 .hint-text { margin-top: 8px; font-size: 13px; color: #9ca3af; font-style: italic; }
+
+
 </style>
 
 <div class="w-full">
 
     @if ($tooFew)
 
-        <div class="bg-white border border-gray-200 rounded-xl px-6 py-16 text-center">
+        <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-6 py-16 text-center">
             <div class="text-4xl mb-4">📚</div>
-            <p class="text-sm text-gray-500 leading-relaxed">
+            <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
                 Для тренировки нужно минимум 4 слова с переводом.
                 @if ($tooFewCount > 0)
                     В словаре сейчас {{ $tooFewCount }} {{ trans_choice('слово|слова|слов', $tooFewCount) }}.
@@ -67,7 +81,7 @@
                 @endif
             </p>
             <a href="{{ route('dictionary.index') }}"
-               class="mt-5 inline-block text-sm text-gray-500 underline hover:text-gray-700">
+               class="mt-5 inline-block text-sm text-gray-500 dark:text-gray-400 underline hover:text-gray-700 dark:hover:text-gray-200">
                 Перейти в словарь
             </a>
         </div>
@@ -79,22 +93,22 @@
             <div class="flex items-center gap-2">
 
                 {{-- Режим --}}
-                <div class="flex gap-0.5 bg-gray-100 rounded-lg p-0.5 text-sm">
+                <div class="flex gap-0.5 bg-gray-100 dark:bg-gray-800 rounded-lg p-0.5 text-sm">
                     <button onclick="switchMode('en-ru')"
                             class="px-3 py-1.5 rounded-md font-medium cursor-pointer transition-colors
-                                   {{ $mode === 'en-ru' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700' }}">
+                                   {{ $mode === 'en-ru' ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200' }}">
                         EN → RU
                     </button>
                     <button onclick="switchMode('ru-en')"
                             class="px-3 py-1.5 rounded-md font-medium cursor-pointer transition-colors
-                                   {{ $mode === 'ru-en' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700' }}">
+                                   {{ $mode === 'ru-en' ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200' }}">
                         RU → EN
                     </button>
                 </div>
 
                 @if ($categories->count() > 1)
                     <select onchange="switchCategory(this.value)"
-                            class="text-sm border border-gray-200 rounded-lg px-3 py-1.5 bg-white text-gray-600 focus:outline-none">
+                            class="text-sm border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-1.5 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 focus:outline-none">
                         <option value="">Все серии</option>
                         @foreach ($categories as $cat)
                             <option value="{{ $cat->id }}" {{ $categoryId == $cat->id ? 'selected' : '' }}>
@@ -105,27 +119,27 @@
                 @endif
 
                 {{-- Включая выученные --}}
-                <label class="flex items-center gap-1.5 text-sm text-gray-500 cursor-pointer select-none">
+                <label class="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 cursor-pointer select-none">
                     <input type="checkbox"
                            onchange="toggleAll(this.checked)"
                            {{ $includeAll ? 'checked' : '' }}
-                           class="rounded border-gray-300 cursor-pointer">
+                           class="rounded border-gray-300 dark:border-gray-600 cursor-pointer">
                     Включая выученные
                 </label>
             </div>
 
-            <span class="text-sm text-gray-400" id="counter-text"></span>
+            <span class="text-sm text-gray-400 dark:text-gray-500" id="counter-text"></span>
         </div>
 
         {{-- Карточка квиза --}}
-        <div class="bg-white border border-gray-200 rounded-xl overflow-hidden" id="quiz-card">
+        <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden" id="quiz-card">
 
             {{-- Прогресс --}}
             <div class="flex gap-1 px-5 pt-4" id="progress-bar"></div>
 
             {{-- Вопрос --}}
-            <div class="px-6 pt-6 pb-5 border-b border-gray-100">
-                <p class="text-xs uppercase tracking-wider text-gray-400 mb-3" id="quiz-label"></p>
+            <div class="px-6 pt-6 pb-5 border-b border-gray-100 dark:border-gray-800">
+                <p class="text-xs uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-3" id="quiz-label"></p>
                 <div id="quiz-phrase" class="quiz-phrase"></div>
                 <div id="hint-container"></div>
             </div>
@@ -134,22 +148,22 @@
             <div id="quiz-options"></div>
 
             {{-- Подвал --}}
-            <div class="flex items-center justify-between px-6 py-3 border-t border-gray-100 min-h-[50px]">
+            <div class="flex items-center justify-between px-6 py-3 border-t border-gray-100 dark:border-gray-800 min-h-[50px]">
                 <span class="text-sm feedback-text" id="feedback-text"></span>
                 <button onclick="advance()" id="next-btn" style="display:none"
-                        class="text-sm text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg px-4 py-1.5 cursor-pointer transition-colors">
+                        class="text-sm text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg px-4 py-1.5 cursor-pointer transition-colors">
                     Далее →
                 </button>
             </div>
         </div>
 
         {{-- Экран результата --}}
-        <div class="bg-white border border-gray-200 rounded-xl px-8 py-12 text-center" id="score-screen" style="display:none">
-            <div class="text-6xl font-extrabold text-gray-900" id="score-number"></div>
-            <div class="text-sm text-gray-400 mt-2" id="score-label"></div>
+        <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-8 py-12 text-center" id="score-screen" style="display:none">
+            <div class="text-6xl font-extrabold text-gray-900 dark:text-gray-100" id="score-number"></div>
+            <div class="text-sm text-gray-400 dark:text-gray-500 mt-2" id="score-label"></div>
             <div id="missed-list" class="mt-8 text-left"></div>
             <button onclick="playAgain()"
-                    class="mt-8 px-8 py-2.5 bg-gray-900 text-white text-sm font-semibold rounded-lg hover:bg-gray-700 cursor-pointer">
+                    class="mt-8 px-8 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm font-semibold rounded-lg hover:bg-gray-700 dark:hover:bg-gray-100 cursor-pointer">
                 Ещё раз
             </button>
         </div>
@@ -272,14 +286,19 @@ function showScore() {
         ? 'Отлично! Все слова верно.'
         : `правильных из ${QUESTIONS.length}`;
 
+    const isDark = document.documentElement.classList.contains('dark');
+    const borderColor = isDark ? '#1f2937' : '#f3f4f6';
+    const questionColor = isDark ? '#f3f4f6' : '#111827';
+    const answerColor = '#9ca3af';
+
     const missedEl = document.getElementById('missed-list');
     if (missed.length) {
         missedEl.innerHTML = '<p style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:#9ca3af;margin-bottom:10px">Ошибки</p>';
         missed.forEach(m => {
             missedEl.insertAdjacentHTML('beforeend',
-                `<div style="display:flex;justify-content:space-between;align-items:baseline;padding:10px 0;border-bottom:1px solid #f3f4f6;font-size:13px;gap:12px">
-                    <span style="font-weight:500;color:#111827">${esc(m.question)}</span>
-                    <span style="color:#9ca3af;text-align:right">${esc(m.answer)}</span>
+                `<div style="display:flex;justify-content:space-between;align-items:baseline;padding:10px 0;border-bottom:1px solid ${borderColor};font-size:13px;gap:12px">
+                    <span style="font-weight:500;color:${questionColor}">${esc(m.question)}</span>
+                    <span style="color:${answerColor};text-align:right">${esc(m.answer)}</span>
                 </div>`
             );
         });
