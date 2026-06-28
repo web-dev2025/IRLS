@@ -34,7 +34,10 @@ class ScrapeChapterJob implements ShouldQueue
             $this->downloadImages($imageUrls);
 
             $saved = $this->chapter->pages()->count();
-            $this->chapter->update(['status' => $saved > 0 ? 'ready' : 'failed']);
+            $this->chapter->update([
+                'status'      => $saved > 0 ? 'ready' : 'failed',
+                'source_html' => null,
+            ]);
         } catch (\Throwable $e) {
             $this->chapter->update(['status' => 'failed']);
             throw $e;
