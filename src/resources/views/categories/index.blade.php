@@ -4,7 +4,7 @@
         <h1 class="text-2xl font-semibold">Манга</h1>
         <a href="{{ route('categories.create') }}"
            class="px-4 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm rounded-lg hover:bg-gray-700 dark:hover:bg-gray-100">
-            + Добавить серию
+            + Добавить
         </a>
     </div>
 
