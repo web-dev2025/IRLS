@@ -37,7 +37,16 @@
                    class="text-sm text-gray-500 hover:text-white shrink-0" title="{{ $nextChapter->title }}">След. ›</a>
             @endif
         </div>
-        <span class="text-sm text-gray-500 shrink-0">{{ $pages->count() }} стр.</span>
+        <div class="flex items-center gap-3 shrink-0">
+            <span class="text-sm text-gray-500">{{ $pages->count() }} стр.</span>
+            <button onclick="toggleRead(this)"
+                    data-chapter-id="{{ $chapter->id }}"
+                    data-is-read="{{ $chapter->is_read ? '1' : '0' }}"
+                    class="text-lg leading-none transition-colors cursor-pointer {{ $chapter->is_read ? 'text-green-400 hover:text-gray-500' : 'text-gray-600 hover:text-green-400' }}"
+                    title="{{ $chapter->is_read ? 'Отметить как непрочитанное' : 'Отметить как прочитанное' }}">
+                ✓
+            </button>
+        </div>
     </div>
 
     {{-- Pages --}}
@@ -480,6 +489,21 @@
     if (window.__EXISTING_NOTES__) {
         window.__EXISTING_NOTES__.forEach(note => renderNoteMark(note));
     }
+
+    // ── Mark chapter as read ──────────────────────────────────────
+    window.toggleRead = function(btn) {
+        fetch(`/api/chapters/${btn.dataset.chapterId}/read`, {
+            method: 'PATCH',
+            headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+        })
+        .then(r => r.json())
+        .then(data => {
+            btn.dataset.isRead = data.is_read ? '1' : '0';
+            btn.title = data.is_read ? 'Отметить как непрочитанное' : 'Отметить как прочитанное';
+            btn.className = 'text-lg leading-none transition-colors cursor-pointer ' +
+                (data.is_read ? 'text-green-400 hover:text-gray-500' : 'text-gray-600 hover:text-green-400');
+        });
+    };
 
     // ── Anchor scroll after images above target are loaded ────────
     if (location.hash) {

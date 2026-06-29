@@ -90,6 +90,13 @@ class ChapterController extends Controller
         return response()->json(['ok' => true]);
     }
 
+    public function toggleRead(Chapter $chapter): JsonResponse
+    {
+        $chapter->update(['is_read' => !$chapter->is_read]);
+
+        return response()->json(['is_read' => $chapter->is_read]);
+    }
+
     public function status(Chapter $chapter): JsonResponse
     {
         return response()->json([

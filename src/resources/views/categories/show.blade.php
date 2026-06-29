@@ -30,14 +30,24 @@
     @else
         <div class="grid grid-cols-1 gap-3">
             @foreach ($chapters as $chapter)
-                <div class="flex items-center justify-between bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-5 py-4"
+                <div class="flex items-center justify-between bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-5 py-4 {{ $chapter->is_read ? 'opacity-60' : '' }}"
                      data-chapter-id="{{ $chapter->id }}"
                      data-status="{{ $chapter->status }}">
 
-                    <div>
-                        <div class="font-medium">{{ $chapter->title }}</div>
-                        <div class="text-sm text-gray-400 dark:text-gray-500 mt-0.5">
-                            <span class="chapter-pages-count">{{ $chapter->pages_count }}</span> стр.
+                    <div class="flex items-center gap-3 min-w-0">
+                        {{-- Read toggle --}}
+                        <button type="button"
+                                onclick="toggleRead({{ $chapter->id }}, this)"
+                                class="shrink-0 transition-colors cursor-pointer text-lg leading-none {{ $chapter->is_read ? 'text-green-500 dark:text-green-400 hover:text-gray-300 dark:hover:text-gray-600' : 'text-gray-200 dark:text-gray-700 hover:text-green-400 dark:hover:text-green-500' }}"
+                                title="{{ $chapter->is_read ? 'Отметить как непрочитанное' : 'Отметить как прочитанное' }}">
+                            ✓
+                        </button>
+
+                        <div>
+                            <div class="font-medium">{{ $chapter->title }}</div>
+                            <div class="text-sm text-gray-400 dark:text-gray-500 mt-0.5">
+                                <span class="chapter-pages-count">{{ $chapter->pages_count }}</span> стр.
+                            </div>
                         </div>
                     </div>
 
@@ -59,7 +69,6 @@
                             @endif
                         </span>
 
-                        {{-- Read button (active only when ready) --}}
                         @if ($chapter->status === 'ready')
                             <a href="{{ route('chapters.read', $chapter) }}"
                                class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">Читать</a>
@@ -75,11 +84,39 @@
                 </div>
             @endforeach
         </div>
+
+        @php $readCount = $chapters->where('is_read', true)->count(); @endphp
+        @if ($readCount > 0)
+            <p class="mt-3 text-xs text-gray-400 dark:text-gray-500">
+                <span class="text-green-500 dark:text-green-400">{{ $readCount }} прочитано</span>
+                · {{ $chapters->count() - $readCount }} осталось
+            </p>
+        @endif
     @endif
 
 </x-layouts.app>
 
 <script>
+function toggleRead(id, btn) {
+    fetch(`/api/chapters/${id}/read`, {
+        method: 'PATCH',
+        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+    })
+    .then(r => r.json())
+    .then(data => {
+        const row = btn.closest('[data-chapter-id]');
+        const isRead = data.is_read;
+
+        btn.className = 'shrink-0 transition-colors cursor-pointer text-lg leading-none ' +
+            (isRead
+                ? 'text-green-500 dark:text-green-400 hover:text-gray-300 dark:hover:text-gray-600'
+                : 'text-gray-200 dark:text-gray-700 hover:text-green-400 dark:hover:text-green-500');
+        btn.title = isRead ? 'Отметить как непрочитанное' : 'Отметить как прочитанное';
+
+        row.classList.toggle('opacity-60', isRead);
+    });
+}
+
 // Poll status for chapters that are still processing
 (function () {
     const cards = document.querySelectorAll('[data-chapter-id]');

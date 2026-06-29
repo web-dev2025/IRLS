@@ -33,6 +33,7 @@ Route::prefix('api')->name('api.')->group(function () {
     Route::post('notes', [NoteController::class, 'store'])->name('notes.store');
     Route::delete('notes/{note}', [NoteController::class, 'destroy'])->name('notes.destroy');
     Route::patch('notes/{note}/learned', [NoteController::class, 'toggleLearned'])->name('notes.toggleLearned');
+    Route::patch('chapters/{chapter}/read', [ChapterController::class, 'toggleRead'])->name('chapters.toggleRead');
     Route::get('dictionary/{word}', [ApiDictionaryController::class, 'lookup'])->name('dictionary.lookup');
     Route::post('ocr', [OcrController::class, 'recognize'])->name('ocr');
     Route::get('translate/{text}', [TranslateController::class, 'translate'])->name('translate');
